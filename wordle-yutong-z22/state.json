@@ -1,0 +1,23 @@
+{
+  "total_rounds": 2,
+  "games": [
+    {
+      "answer": "PROXY",
+      "guesses": [
+        "CRANE",
+        "PROUD",
+        "PROXY"
+      ]
+    },
+    {
+      "answer": "HELLO",
+      "guesses": [
+        "POLAR",
+        "FRONT",
+        "LOSER",
+        "BROWN",
+        "HELLO"
+      ]
+    }
+  ]
+}
