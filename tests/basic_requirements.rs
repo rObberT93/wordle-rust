@@ -39,7 +39,7 @@ fn test_04_5_pts_continue_game_and_statistics() {
 }
 
 #[test]
-#[timeout(3000)]
+#[timeout(2000)]
 fn test_05_5_pts_specify_offset_and_seed() {
     // specify offset and seed
     TestCase::read("05_01_specify_seed").run_and_compare_result();

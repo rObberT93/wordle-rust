@@ -1,0 +1,11 @@
+# Honor Code
+- [Reading and writing a JSON file in Rust](https://blog.devgenius.io/reading-and-writing-a-json-file-in-rust-2731da8d6ad0)
+- [Rust-高级-Crate之rayon](https://yangandmore.github.io/2022/01/12/Rust-%E9%AB%98%E7%BA%A7-Crate%E4%B9%8Brayon/)
+- [The best Wordle strategy – according to science](https://www.youtube.com/watch?v=YEoCBnQwdzM)
+- [Rust学习（33）：智能指针-RefCell<T>](https://zhuanlan.zhihu.com/p/52325586)
+- [彻底认识devDependencies和dependencies](https://juejin.cn/post/7077520444332441630)
+- [Why are explicit lifetimes needed in Rust?](https://stackoverflow.com/questions/31609137/why-are-explicit-lifetimes-needed-in-rust)
+- [How do I create a Vec from a range and shuffle it?](https://stackoverflow.com/questions/26033976/how-do-i-create-a-vec-from-a-range-and-shuffle-it)
+- [What is the difference between iter and into_iter?](https://stackoverflow.com/questions/34733811/what-is-the-difference-between-iter-and-into-iter)
+- [GitHub xcaptain/mofang](https://github.com/xcaptain/mofang/blob/master/src/main.rs)
+- [GitHub fdehau/tui-rs](https://github.com/fdehau/tui-rs/tree/master)

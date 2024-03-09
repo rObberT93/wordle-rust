@@ -1,7 +1,8 @@
 # 大作业：Wordle
 
 2023 年夏季学期《程序设计训练》 Rust 课堂大作业（一）。
-
+## 运行方法
+```cargo``
 ## 作业要求
 
 具体要求请查看[作业文档](https://lab.cs.tsinghua.edu.cn/rust/projects/wordle/)。

@@ -1,33 +1,40 @@
 use core::panic;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-//use std::collections::HashSet;
-use std::path::PathBuf;
-use std::{vec, string};
-use std::fs;
-use super::builtin_words;
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+    path::PathBuf,
+    vec,
+    fs,
+};
 use serde::Deserialize;
 
+use super::builtin_words;
+
+const WORD_LENGTH: usize = 5;
 #[derive(Deserialize)]
 pub struct WordProcessor {
-    pub random_mode: bool, ///
-    word_mode: bool,
-    pub meet_word_argument: bool,
-    pub difficult_mode: bool, ///
-    pub stats_mode: bool, ///
-    pub word_argument: Option<String>,
-    seed_mode: bool,
-    pub seed_argument: Option<u64>, ///
-    day_mode: bool,
-    pub day_argument: Option<usize>, ///
-    pub final_set_file: Option<String>,
-    pub acceptable_set_file: Option<String>,
-    pub final_set: Vec<String>, ///
-    pub acceptable_set: Vec<String>, ///
-    pub state_mode: bool,
-    pub state_path: Option<PathBuf>,
-    pub config_mode: bool,
-    pub config_path: Option<PathBuf>,
+    pub random_mode: bool, // random pattern
+    word_mode: bool, // specify words
+    pub meet_word_argument: bool, // if cmd determines word
+    pub difficult_mode: bool, // difficult pattern
+    pub stats_mode: bool, // output status after game ends
+    pub word_argument: Option<String>, 
+    seed_mode: bool, // if assigned seed
+    pub seed_argument: Option<u64>, 
+    day_mode: bool, // if assigned day
+    pub day_argument: Option<usize>, 
+    pub final_set_file: Option<String>, //final vocabulary file name
+    pub acceptable_set_file: Option<String>, // acceptable vocabulary file name
+    pub final_set: Vec<String>, // final vocabulary
+    pub acceptable_set: Vec<String>, // acceptable vocabulary
+    pub state_mode: bool, // save status
+    pub state_path: Option<PathBuf>, // json path
+    pub config_mode: bool, // load argument
+    pub config_path: Option<PathBuf>, // json path
+    pub tui_mode: bool, // start TUI
+    pub gui_mode: bool, // start GUI
+    pub hint_mode: bool, // need hint
+    pub test_mode: bool, // test attempts numbers
 }
 
 #[derive(Deserialize)]
@@ -56,14 +63,18 @@ impl WordProcessor {
             seed_argument: None,
             day_mode: false,
             day_argument: None,
-            final_set_file: Some("builtin_word.rs".to_string()),
-            acceptable_set_file: Some("builtin_word.rs".to_string()),
+            final_set_file: Some("builtin_word.rs".to_string()), // default
+            acceptable_set_file: Some("builtin_word.rs".to_string()), //default
             final_set: vec![],
             acceptable_set: vec![],
             state_mode: false,
             state_path: None,
             config_mode: false,
             config_path: None,
+            tui_mode: false,
+            gui_mode: false,
+            hint_mode: false,
+            test_mode: false,
         }
     }
 
@@ -145,7 +156,7 @@ impl WordProcessor {
             }
         }
 
-        self.check_sets(&self.final_set, &self.acceptable_set);
+        self.check_sets(&self.final_set, &self.acceptable_set); // final set must be strictly a subset of the acceptable list
 
         if let Some(index) = args.iter().position(|arg| arg == "-s" || arg == "--seed") {
             self.seed_mode = true;
@@ -161,6 +172,9 @@ impl WordProcessor {
             self.day_mode = true;
             if index + 1 < args.len() {
                 let next_argument = &args[index + 1];
+                if next_argument.contains("-") {
+                    panic!("Invalid value for -d/--day option!");
+                }
                 if let Ok(day) = next_argument.parse::<usize>() {
                     self.day_argument = Some(day);
                     if !self.validate_day() {
@@ -190,19 +204,34 @@ impl WordProcessor {
                 }
             }
         }
+        if args.iter().any(|arg| arg == "-T" || arg == "--tui") {
+            self.tui_mode = true;
+        }
+        
+        if args.iter().any(|arg| arg == "-G" || arg == "--gui") {
+            self.gui_mode = true;
+        }
+
+        if args.iter().any(|arg| arg == "-H" || arg == "--hint") {
+            self.hint_mode = true;
+        }
+
+        if args.iter().any(|arg| arg == "--test") {
+            self.test_mode = true;
+        }
     }
 
     pub fn load_answer_list(&mut self, file_name: &str) {
-        if let Ok(file) = File::open(file_name) {
-            self.final_set.clear();
-            let reader = BufReader::new(file);
+        if let Ok(file) = File::open(file_name) { // open file
+            self.final_set.clear(); 
+            let reader: BufReader<File> = BufReader::new(file); // read line by line
             for line in reader.lines() {
                 if let Ok(word) = line {
-                    //检查一行中是否会出现多个单词
+                    // check if there are multiple words in a line
                     let words_in_a_line = word.split_whitespace().collect::<Vec<&str>>();
                     if words_in_a_line.len() > 1 {
                         panic!("There can be only one word in a line!");
-                    } else if word.len() != 5{
+                    } else if word.len() != WORD_LENGTH {
                         panic!("Each word should be 5 in length!");
                     } else if self.final_set.contains(&word.trim().to_owned().to_uppercase()) {
                         panic!("Duplicated!");
@@ -218,14 +247,14 @@ impl WordProcessor {
     pub fn load_accept_list(&mut self, file_name: &str) {
         if let Ok(file) = File::open(file_name) {
             self.acceptable_set.clear();
-            let reader = BufReader::new(file);
+            let reader: BufReader<File> = BufReader::new(file);
             for line in reader.lines() {
                 if let Ok(word) = line {
                     let words_in_a_line = word.split_whitespace().collect::<Vec<&str>>();
-                    //检查一行中是否会出现多个单词
+                    // check multi words in a line
                     if words_in_a_line.len() > 1 {
                         panic!("There can be only one word in a line!");
-                    } else if word.len() != 5{
+                    } else if word.len() != WORD_LENGTH{
                         panic!("Each word should be 5 in length!");
                     } else if self.acceptable_set.contains(&word.trim().to_owned().to_uppercase()) {
                         panic!("Duplicated!");
@@ -286,9 +315,8 @@ impl WordProcessor {
         } else {
             panic!("Config file doesn't exist!");
         }
-    }
+    } 
     
-
 }    
 
 fn get_default_answers_list() -> Vec<String> {
@@ -298,7 +326,6 @@ fn get_default_answers_list() -> Vec<String> {
             .map(|s| s.to_uppercase())
             .collect()
     };
-
 
     answer_list
 }
