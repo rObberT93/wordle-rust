@@ -210,9 +210,11 @@ impl Game {
             guess = sanitize_word(&guess);
             if guess.len() != WORD_LENGTH {
                 return Err(ErrorType::WrongLength);
-            } else if !word_list.iter().any(|word| word == &guess) {
+            }
+            if !word_list.iter().any(|word| word == &guess) {
                 return Err(ErrorType::GuessNotInList);
-            } else if self.difficult {
+            } 
+            if self.difficult {
                 if !self.check_difficult_mode(&guess) {
                     return Err(ErrorType::HintUnused);
                 }

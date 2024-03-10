@@ -69,7 +69,7 @@ pub fn run_gui(name: String,  answer_list: Vec<String>, seed: u64, day: usize, d
 
     for c in ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'].iter() {
         let mut button = Button::new(x, y, 50, 50, c.to_string().as_str());
-        button.set_frame(FrameType::RFlatBox);
+        button.set_frame(FrameType::GtkUpBox);
         button.set_label_size(20);
         button.set_label_color(Color::Black);
         button.set_color(Color::from_rgb(211, 214, 218));
@@ -97,7 +97,7 @@ pub fn run_gui(name: String,  answer_list: Vec<String>, seed: u64, day: usize, d
     buttons = Vec::new();
     for c in ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'].iter() {
         let mut button = Button::new(x, y, 50, 50, c.to_string().as_str());
-        button.set_frame(FrameType::RFlatBox);
+        button.set_frame(FrameType::GtkUpBox);
         button.set_label_size(20);
         button.set_label_color(Color::Black);
         button.set_color(Color::from_rgb(211, 214, 218));
@@ -125,7 +125,7 @@ pub fn run_gui(name: String,  answer_list: Vec<String>, seed: u64, day: usize, d
     let mut x = 160;
     for c in ['Z', 'X', 'C', 'V', 'B', 'N', 'M'].iter() {
         let mut button = Button::new(x, y, 50, 50, c.to_string().as_str());
-        button.set_frame(FrameType::RFlatBox);
+        button.set_frame(FrameType::GtkUpBox);
         button.set_label_size(20);
         button.set_label_color(Color::Black);
         button.set_color(Color::from_rgb(211, 214, 218));
@@ -148,7 +148,7 @@ pub fn run_gui(name: String,  answer_list: Vec<String>, seed: u64, day: usize, d
     vec_buttons.push(buttons);
 
     let mut enter_button: Button = Button::new(60, y, 80, 50, "ENTER");
-    enter_button.set_frame(FrameType::RFlatBox);
+    enter_button.set_frame(FrameType::GtkUpBox);
     enter_button.set_label_size(20);
     enter_button.set_label_color(Color::Black);
     enter_button.set_color(Color::from_rgb(211, 214, 218));
@@ -163,8 +163,11 @@ pub fn run_gui(name: String,  answer_list: Vec<String>, seed: u64, day: usize, d
         let mut selected_letters = selected_letters_clone.borrow_mut();
         if selected_letters.len() == 5 {
             if !Game::input_valid_check(&selected_letters.to_uppercase(), &acceptable_list.clone()) {
-                alert(550, 200, "Invalid");
+                alert(550, 200, "Not in word list");
             } 
+            else if difficult_mode && !game.check_difficult_mode(&selected_letters.to_uppercase()) {
+                alert(550, 200, "Invalid in difficult mode");
+            }
             
             else { //valid word
                 let result: GuessWordStatus = game.play(&selected_letters.to_uppercase());
@@ -185,8 +188,8 @@ pub fn run_gui(name: String,  answer_list: Vec<String>, seed: u64, day: usize, d
                     wind_.set_label(&message); 
                     wind_.clear();
                     wind_.redraw();
-                    let mut resart_button = Button::new(100, 150, 200, 100, "RESTART");
-                    resart_button.set_frame(FrameType::RFlatBox);
+                    let mut resart_button = Button::new(160, 150, 200, 100, "RESTART");
+                    resart_button.set_frame(FrameType::GtkUpBox);
                     resart_button.set_label_size(20);
                     resart_button.set_label_color(Color::White);
                     resart_button.set_color(Color::rgb_color(156, 34, 24));
@@ -196,8 +199,8 @@ pub fn run_gui(name: String,  answer_list: Vec<String>, seed: u64, day: usize, d
                         wind_clone_for_restart_inner.borrow_mut().hide();
                         true;
                     });
-                    let mut close_button = Button::new(350, 150, 200, 100, "CLOSE");
-                    close_button.set_frame(FrameType::RFlatBox);
+                    let mut close_button = Button::new(430, 150, 200, 100, "CLOSE");
+                    close_button.set_frame(FrameType::GtkUpBox);
                     close_button.set_label_size(20);
                     close_button.set_label_color(Color::White);
                     close_button.set_color(Color::rgb_color(106, 170, 100));
@@ -254,7 +257,7 @@ pub fn run_gui(name: String,  answer_list: Vec<String>, seed: u64, day: usize, d
     });            
 
     let mut delete_button = Button::new(650, y, 80, 50, "DELETE");
-    delete_button.set_frame(FrameType::RFlatBox);
+    delete_button.set_frame(FrameType::GtkUpBox);
     delete_button.set_label_size(20);
     delete_button.set_label_color(Color::Black);
     delete_button.set_color(Color::from_rgb(211, 214, 218));

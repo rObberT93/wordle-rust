@@ -36,6 +36,7 @@ use chrono::Local;
 use std::thread;
 use fltk::frame::Frame;
 use chrono::Timelike;
+use fltk::button::CheckButton;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 
@@ -72,59 +73,71 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let wind: Rc<RefCell<DoubleWindow>> = Rc::new(RefCell::new(DoubleWindow::new(0, 0, 800, 800, "Home Page")));
             wind.borrow_mut().set_pos(400, 0);
             wind.borrow_mut().set_color(Color::White);
-            let input = Input::new(160, 220, 120, 30, "Name");
+            let input = Input::new(180, 200, 120, 30, "Name");
             
-            let mut button = Button::new(160, 300, 120, 30, "Start");
+            let mut button = Button::new(180, 260, 120, 30, "Start");
             button.set_color(Color::rgb_color(156, 34, 24));
             button.set_frame(FrameType::FlatBox);
             button.set_label_size(20);
             button.set_label_color(Color::White);
 
-            let mut frame = Frame::new(120, 420, 400, 30, "");
+            let mut exit_button = Button::new(180, 320, 120, 30, "exit");
+            exit_button.set_color(Color::rgb_color(106, 170, 100));
+            exit_button.set_frame(FrameType::FlatBox);
+            exit_button.set_label_size(20);
+            exit_button.set_label_color(Color::White);
+
+            let mut frame = Frame::new(180, 750, 400, 30, "");
             frame.set_frame(FrameType::FlatBox);
             frame.set_color(Color::White);
             frame.set_label_size(24);
             frame.set_label_color(Color::Black);
             
-            let mut frame_time = Frame::new(140, 480, 160, 50, "");
+            let mut frame_time = Frame::new(180, 400, 160, 40, "");
             frame_time.set_frame(FrameType::FlatBox);
             frame_time.set_color(Color::White);
             frame_time.set_label_size(24);
             frame_time.set_label_color(Color::Black);
             
+            let mut difficult_check = CheckButton::new(400, 280, 40, 30, "Difficult Mode");
+            difficult_check.set_frame(FrameType::FlatBox);
+            difficult_check.set_label_size(16);
+            difficult_check.set_label_color(Color::Black);
+            difficult_check.set_color(Color::White);
+
+            let difficult_mode: Rc<RefCell<bool>> = Rc::new(RefCell::new(false)); 
+
+            let difficult_mode_clone = Rc::clone(&difficult_mode);
+            difficult_check.set_callback(move |b| {
+                let mut difficult_mode = difficult_mode_clone.borrow_mut();
+                *difficult_mode = b.is_checked().clone();
+            });
+
             thread::spawn(move || {
-                loop {
-                    let current_time = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();   
-                    let current_hour = Local::now().hour();   
-                    if (0..8).contains(&current_hour) || (23..25).contains(&current_hour) {
-                        frame.set_label("Are you having trouble falling asleep? :/");
-                    } else if (7 .. 9).contains(&current_hour) {
-                        frame.set_label("You should have breakfast first :P");
-                    } else if (9 .. 13).contains(&current_hour) {
-                        frame.set_label("It's time to work :)");
-                    } else if (13 .. 14).contains(&current_hour) {
-                        frame.set_label("You should have lunch first :P");
-                    } else if (14 .. 18).contains(&current_hour) {
-                        frame.set_label("It's time to work :)");
-                    } else if (18 .. 20).contains(&current_hour) {
-                        frame.set_label("You should have dinner first :p");
-                    } else {
-                        frame.set_label("Take a break and go to bed early -_-zZ");
-                    }
-                    frame_time.set_label(&current_time);
-                    thread::sleep(std::time::Duration::from_secs(1));
+                let current_time = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();   
+                let current_hour = Local::now().hour();   
+                if (0..8).contains(&current_hour) || (23..25).contains(&current_hour) {
+                    frame.set_label("Are you having trouble falling asleep? :/");
+                } else if (7 .. 9).contains(&current_hour) {
+                    frame.set_label("You should have breakfast first :P");
+                } else if (9 .. 13).contains(&current_hour) {
+                    frame.set_label("It's time to work :)");
+                } else if (13 .. 14).contains(&current_hour) {
+                    frame.set_label("You should have lunch first :P");
+                } else if (14 .. 18).contains(&current_hour) {
+                    frame.set_label("It's time to work :)");
+                } else if (18 .. 20).contains(&current_hour) {
+                    frame.set_label("You should have dinner first :p");
+                } else {
+                    frame.set_label("Take a break and go to bed early -_-zZ");
                 }
+                frame_time.set_label(&current_time);
             });
             let wind_clone = Rc::clone(&wind);
             button.set_callback(move |_| {
                 let mut wind_clone = wind_clone.borrow_mut();
                 wind_clone.hide();
             });
-            let mut exit_button = Button::new(160, 360, 120, 30, "exit");
-            exit_button.set_color(Color::rgb_color(106, 170, 100));
-            exit_button.set_frame(FrameType::FlatBox);
-            exit_button.set_label_size(20);
-            exit_button.set_label_color(Color::White);
             exit_button.set_callback(move |_| {
                 exit(0);
             });
@@ -137,7 +150,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let name: String = name.borrow().value();
 
             loop {
-                let res: bool = gui::run_gui(name.clone(), answer_list.clone(), seed.clone(), day.clone(), difficult_mode.clone(), acceptable_list.clone());
+                let res: bool = gui::run_gui(name.clone(), answer_list.clone(), seed.clone(), day.clone(), difficult_mode.borrow().clone(), acceptable_list.clone());
                 if !res {
                     break;
                 }
