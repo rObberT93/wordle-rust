@@ -10,6 +10,8 @@ cat /etc/issue
 Debian GNU/Linux 12 \n \l
 ```
 
+具体运行的命令行指令请参考report/大作业：wordle文档
+
 ### 1. WSL图形化界面配置
 - 如果正在使用 Windows 11: WSL2 可能已经带有了一个 X Server 实现 (WSLg)。通过以下方法检查：
     - 启动终端进入 WSL2 发行版，执行 echo $DISPLAY，如果显示不为空，说明存在 WSLg。
